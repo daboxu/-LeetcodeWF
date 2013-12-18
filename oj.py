@@ -50,7 +50,7 @@ for t in title:
     i += 1
 # Create list items with the information we get
 for ix in indexes:
-    item = alfred.Item({'uid':1, 'arg':urls[ix]}, title[ix], possbility[ix], ('icon', {'type':'png'}))
+    item = alfred.Item({'uid':1, 'arg':urls[ix]}, title[ix], possbility[ix], ('icon.png', {'type':'png'}))
     result.append(item)
 # Write the result into xml format and return it.
 xml = alfred.xml(result)
