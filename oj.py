@@ -38,7 +38,7 @@ for td in tds:
             count += 1
 # Get the keyword which user input
 theQuery = u'{query}'
-theQuery = urllib.quote_plus(theQuery)
+theQuery = theQuery.replace('+', ' ')
 i = 0
 indexes = []
 result = []
