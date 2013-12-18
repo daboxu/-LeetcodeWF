@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>Leetcode</string>
+	<key>connections</key>
+	<dict>
+		<key>CA4B294A-E591-4C19-866F-7048A3A736F2</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>ECDCEBC2-0A62-473F-A756-60FB584EF31C</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>dabox</string>
+	<key>description</key>
+	<string>Search for the question</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Leetcode OJ v1</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>62</integer>
+				<key>keyword</key>
+				<string>lt</string>
+				<key>runningsubtext</key>
+				<string>It is searching for you.</string>
+				<key>script</key>
+				<string>import urllib2, alfred, urllib
+from bs4 import BeautifulSoup
+url = "http://oj.leetcode.com/problems/"
+
+usock = urllib2.urlopen(url)
+data = usock.read()
+usock.close()
+dom = BeautifulSoup(data)
+tds = dom.find_all('td')
+possbility = []
+count = 0
+urls = []
+title  = []
+
+for td in tds:
+    if '\n' not in  td.contents:
+        if count==0:
+            for t in td.children:
+                title.append(str(unicode(t.contents[0])))
+            urls.append("http://oj.leetcode.com"+ str(unicode(td.a['href'])))
+            count += 1
+        elif count == 2:
+            possbility.append(str(unicode(td.contents[0])))
+            count = 0
+        else:
+            count += 1
+
+theQuery = u'{query}'
+theQuery = theQuery.replace('+',' ')
+i = 0
+indexes = []
+result = []
+for t in title:
+    if theQuery in t.lower():
+        indexes.append(i)
+    i += 1
+
+for ix in indexes:
+    item = alfred.Item({'uid':1, 'arg':urls[ix]}, title[ix], 'AC rate: '+ possbility[ix], ('icon.png', {'type':'png'}))
+    result.append(item)
+
+xml = alfred.xml(result)
+alfred.write(xml)</string>
+				<key>title</key>
+				<string>Leetcode Online Judge</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>CA4B294A-E591-4C19-866F-7048A3A736F2</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>plusspaces</key>
+				<true/>
+				<key>url</key>
+				<string>{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>ECDCEBC2-0A62-473F-A756-60FB584EF31C</string>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>CA4B294A-E591-4C19-866F-7048A3A736F2</key>
+		<dict>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+		<key>ECDCEBC2-0A62-473F-A756-60FB584EF31C</key>
+		<dict>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>
