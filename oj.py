@@ -1,5 +1,6 @@
-import urllib2, alfred, urllib
+import urllib2, alfred, urllib, itertools
 from bs4 import BeautifulSoup
+from bs4 import element as BSElem
 #Target url we are searching on
 url = "http://oj.leetcode.com/problems/"
 #Fetch the webpage
@@ -7,51 +8,35 @@ usock = urllib2.urlopen(url)
 data = usock.read()
 usock.close()
 
+def isTag(x):
+    return isinstance(x, BSElem.Tag)
+
 #Get the table content we want
 dom = BeautifulSoup(data)
-tds = dom.find_all('td')
+table = dom.find('table', id="problemList")
 
-possbility = [] # Array for probability
-count = 0 # Counter to control the information we are accessing
-# count == 0 means we are accessing the title
-# count == 2 means we are accessing the AC rate
-urls = [] # Array for urls
-title  = [] # Array for titles
+questions = []
 
-#In the for loop, get every question out from
-#the webpage
-for td in tds:
-    if '\n' not in  td.contents:
-        if count==0:
-            # Get the title
-            for t in td.children:
-                title.append(str(unicode(t.contents[0])))
-            # Get the url
-            urls.append("http://oj.leetcode.com"+ str(unicode(td.a['href'])))
-            count += 1
-        elif count == 2:
-            # Get the AC rate
-            possbility.append(str(unicode(td.contents[0])))
-            count = 0
-        else:
-            # Skip the Date column
-            count += 1
-# Get the keyword which user input
+for row in itertools.ifilter(isTag, table.tbody.contents):
+        cell = list(itertools.ifilter(isTag, row.contents))
+        questions.append((str(unicode(cell[1].a.string)), #name
+            float(str(unicode(cell[3].string)).strip('%')), #AC Rate
+            "http://oj.leetcode.com"+str(unicode(cell[1].a['href'])) #url
+        ))
+
 theQuery = u'{query}'
 theQuery = theQuery.replace('+', ' ')
-i = 0
-indexes = []
+
+matched = filter(lambda t: theQuery in t[0].lower(), questions)
+matched = sorted(matched, key = lambda item: item[1], reverse=True)
 result = []
-# In the for loop, search the keyword in all titles,
-# record the index of the title.
-for t in title:
-    if theQuery in t.lower():
-        indexes.append(i)
-    i += 1
-# Create list items with the information we get
-for ix in indexes:
-    item = alfred.Item({'uid':1, 'arg':urls[ix]}, title[ix], 'AC Rate: ' + possbility[ix], ('icon.png', {'type':'png'}))
-    result.append(item)
-# Write the result into xml format and return it.
+id = 1
+# # # Create list items with the information we get
+for item in matched:
+    result.append(
+        alfred.Item({'uid':id, 'arg': item[2]}, item[0], 'AC Rate: ' + str(item[1]), ('icon.png', {'type':'png'}))
+    )
+    id += 1
+
+# # Write the result into xml format and return it.
 xml = alfred.xml(result)
-alfred.write(xml)
