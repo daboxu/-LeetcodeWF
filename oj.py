@@ -21,7 +21,7 @@ for row in itertools.ifilter(isTag, table.tbody.contents):
         cell = list(itertools.ifilter(isTag, row.contents))
         questions.append((str(unicode(cell[1].a.string)), #name
             float(str(unicode(cell[3].string)).strip('%')), #AC Rate
-            "http://oj.leetcode.com"+str(unicode(cell[1].a['href'])) #url
+            unicode("http://oj.leetcode.com"+str(unicode(cell[1].a['href']))) #url
         ))
 
 theQuery = u'{query}'
@@ -40,3 +40,4 @@ for item in matched:
 
 # # Write the result into xml format and return it.
 xml = alfred.xml(result)
+alfred.write(xml)
